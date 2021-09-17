@@ -1,26 +1,34 @@
 import { useState } from "react";
 import axios from "axios";
+import { toast } from "react-toastify";
+import { Modal } from "antd";
+import Link from "next/link";
 
 const Register = () => {
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [secret, setSecret] = useState("");
+    const [ok, setOk] = useState(false);
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         // console.log(name, email, password, secret);
-        axios
-            .post("http://localhost:8000/api/register", {
+        try {
+            const { data } = await axios.post(`${process.env.NEXT_PUBLIC_API}/register`, {
                 name,
                 email,
                 password,
                 secret,
-            })
-            .then((res) => {
-                console.log(res);
-            })
-            .catch((err) => console.log(err));
+            });
+            setOk(data.ok);
+            setName("");
+            setEmail("");
+            setPassword("");
+            setSecret("");
+        } catch (error) {
+            toast.error(error.response.data);
+        }
     };
 
     return (
@@ -42,7 +50,6 @@ const Register = () => {
                                 onChange={(e) => setName(e.target.value)}
                                 value={name}
                                 type="text"
-                                required
                                 className="form-control"
                                 placeholder="Enter Name"
                             />
@@ -56,7 +63,6 @@ const Register = () => {
                                 onChange={(e) => setEmail(e.target.value)}
                                 value={email}
                                 type="email"
-                                required
                                 className="form-control"
                                 placeholder="Enter Email"
                             />
@@ -70,7 +76,6 @@ const Register = () => {
                                 onChange={(e) => setPassword(e.target.value)}
                                 value={password}
                                 type="password"
-                                required
                                 className="form-control"
                                 placeholder="Enter Password"
                             />
@@ -96,16 +101,36 @@ const Register = () => {
                                 onChange={(e) => setSecret(e.target.value)}
                                 value={secret}
                                 type="text"
-                                required
                                 className="form-control"
                                 placeholder="Write your answer here"
                             />
                         </div>
 
                         <div className="form-group p-2">
-                            <button className="btn btn-primary col-12">Submit</button>
+                            <button
+                                disabled={!name || !email || !secret || !password}
+                                className="btn btn-primary col-12"
+                            >
+                                Submit
+                            </button>
                         </div>
                     </form>
+                </div>
+            </div>
+
+            <div className="row">
+                <div className="col">
+                    <Modal
+                        title="Congratulation"
+                        visible={ok}
+                        onCancel={() => setOk(false)}
+                        footer={null}
+                    >
+                        <p>You have successfully register</p>
+                        <Link href="/login">
+                            <a className="btn btn-primary btn-sm">Login</a>
+                        </Link>
+                    </Modal>
                 </div>
             </div>
         </div>
