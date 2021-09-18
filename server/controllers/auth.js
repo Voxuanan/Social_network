@@ -26,7 +26,7 @@ export const register = async (req, res) => {
         });
     } catch (error) {
         console.log("REGISTER FALLED => ", error);
-        res.status(404).send("Error, please try again");
+        res.status(400).send("Error, please try again");
     }
 };
 
@@ -45,6 +45,19 @@ export const login = async (req, res) => {
         res.json({ token, user });
     } catch (error) {
         // console.log("LOGIN FALLED => ", error);
-        res.status(404).send("Error, please try again");
+        res.status(400).send("Error, please try again");
+    }
+};
+
+export const currentUser = async (req, res) => {
+    // console.log(req.headers);
+    // console.log(req.user);
+    try {
+        const { _id } = req.user;
+        const user = await User.findById({ _id });
+        res.json({ ok: true });
+    } catch (error) {
+        // console.log("CURRENT USER FALLED => ", error);
+        res.status(400).send("Error, please try again");
     }
 };
