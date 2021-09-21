@@ -25,7 +25,7 @@ const UserProvider = ({ children }) => {
         },
         function (error) {
             let res = error.response;
-            if ((res.status = 401 && res.config && !res.config.__isRetryRequest)) {
+            if (res.status == 401 && res.config && !res.config.__isRetryRequest) {
                 if (state) {
                     setState(null);
                     window.localStorage.removeItem("auth");
