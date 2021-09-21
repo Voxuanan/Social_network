@@ -1,14 +1,17 @@
 import { useState, useContext } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { Modal } from "antd";
 import Link from "next/link";
-import AuthForm from "../components/forms/AuthForm";
+import ForgotPasswordForm from "../components/forms/ForgotPasswordForm";
 import { useRouter } from "next/router";
 import { UserContext } from "../context/index";
 
-const Login = () => {
+const ForgotPassword = () => {
     const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
+    const [newPassword, setNewPassword] = useState("");
+    const [secret, setSecret] = useState("");
+    const [ok, setOk] = useState(false);
     const [loading, setLoading] = useState(false);
     const router = useRouter();
 
@@ -16,73 +19,68 @@ const Login = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        // console.log(name, email, password, secret);
+        // console.log(email, password, secret);
         setLoading(true);
         try {
-            const { data } = await axios.post(`/login`, {
+            const { data } = await axios.post(`/forgot-password`, {
                 email,
-                password,
+                newPassword,
+                secret,
             });
-            // console.log(data);
-            // update context
-            setState({ user: data.user, token: data.token });
-            // save in localStorage
-            window.localStorage.setItem("auth", JSON.stringify(data));
+            // console.log("forgot password res data =>", data);
+            setOk(data.ok);
             setEmail("");
             setPassword("");
+            setSecret("");
             setLoading(false);
-            router.push("/");
         } catch (error) {
             setLoading(false);
             toast.error(error.response?.data);
         }
     };
 
-    if (state && state.token) router.push("/");
+    // if (state && state.token) router.push("/");
     return (
         <div className="container-fluid">
             <div className="row py-5 bg-default-image text-light">
                 <div className="col text-center">
-                    <h1>Login Page</h1>
+                    <h1>Forgot Password</h1>
                 </div>
             </div>
 
             <div className="row">
                 <div className="col-md-6 offset-md-3">
-                    <AuthForm
+                    <ForgotPasswordForm
                         handleSubmit={handleSubmit}
                         email={email}
                         setEmail={setEmail}
-                        password={password}
-                        setPassword={setPassword}
+                        newPassword={newPassword}
+                        setNewPassword={setNewPassword}
+                        secret={secret}
+                        setSecret={setSecret}
                         loading={loading}
-                        page="login"
+                        page="forgot-password"
                     />
                 </div>
             </div>
 
             <div className="row">
                 <div className="col">
-                    <p className="text-center">
-                        Don't have an account?
-                        <Link href="/register">
-                            <a> Register</a>
+                    <Modal
+                        title="Congratulation"
+                        visible={ok}
+                        onCancel={() => setOk(false)}
+                        footer={null}
+                    >
+                        <p>Congratulation You can now login your password</p>
+                        <Link href="/login">
+                            <a className="btn btn-primary btn-sm">Login</a>
                         </Link>
-                    </p>
-                </div>
-            </div>
-
-            <div className="row">
-                <div className="col">
-                    <p className="text-center">
-                        <Link href="/forgot-password">
-                            <a className="text-danger">Forgot password</a>
-                        </Link>
-                    </p>
+                    </Modal>
                 </div>
             </div>
         </div>
     );
 };
 
-export default Login;
+export default ForgotPassword;

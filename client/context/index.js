@@ -26,9 +26,11 @@ const UserProvider = ({ children }) => {
         function (error) {
             let res = error.response;
             if ((res.status = 401 && res.config && !res.config.__isRetryRequest)) {
-                setState(null);
-                window.localStorage.removeItem("auth");
-                router.push("/login");
+                if (state) {
+                    setState(null);
+                    window.localStorage.removeItem("auth");
+                    router.push("/login");
+                }
             }
             return Promise.reject(error);
         }

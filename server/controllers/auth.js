@@ -36,7 +36,7 @@ export const login = async (req, res) => {
         const { email, password } = req.body;
         const user = await User.findOne({ email });
         if (!user) return res.status(400).send("Email or password is incorrect");
-        const match = comparePassword(password, user.password);
+        const match = await comparePassword(password, user.password);
         if (!match) return res.status(400).send("Email or password is incorrect");
         // create sign token
         const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
@@ -58,6 +58,26 @@ export const currentUser = async (req, res) => {
         res.json({ ok: true });
     } catch (error) {
         // console.log("CURRENT USER FALLED => ", error);
+        res.status(400).send("Error, please try again");
+    }
+};
+
+export const forgotPassword = async (req, res) => {
+    // console.log(req.body);
+    try {
+        const { email, newPassword, secret } = req.body;
+        if (!newPassword || newPassword.length < 6)
+            return res.status(400).send("New password is required and at least 6 characters");
+        if (!secret) return res.status(400).send("Secret is required");
+        const user = await User.findOne({ email, secret });
+        if (!user) return res.status(400).send("Email or secret is incorrect");
+        const hashedPassword = await hashPassword(newPassword);
+        await User.findByIdAndUpdate(user._id, { password: hashedPassword });
+        return res.json({
+            ok: true,
+        });
+    } catch (error) {
+        // console.log("FORGOT PASSWORD FALLED => ", error);
         res.status(400).send("Error, please try again");
     }
 };
