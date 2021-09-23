@@ -10,16 +10,39 @@ const dashboard = () => {
     const [state, setState] = useContext(UserContext);
 
     const [content, setContent] = useState("");
+    const [image, setImage] = useState({});
+    const [uploading, setUploading] = useState(false);
 
     const router = useRouter();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const { data } = await axios.post("/create-post", { content });
-            console.log("CREATE POST RESPONSE =>", data);
+            const { data } = await axios.post("/create-post", { content, image });
+            // console.log("CREATE POST RESPONSE =>", data);
+            setImage({});
             setContent("");
         } catch (error) {
+            toast.error(error.response?.data);
+        }
+    };
+
+    const handleImage = async (e) => {
+        const file = e.target.files[0];
+        let formData = new FormData();
+        formData.append("image", file);
+        // console.log([...formData]);
+        setUploading(true);
+        try {
+            const { data } = await axios.post("/upload-image", formData);
+            // console.log("UPLOAD IMAGE RESPONSE =>", data);
+            setUploading(false);
+            setImage({
+                url: data.url,
+                public_id: data.public_id,
+            });
+        } catch (error) {
+            setUploading(false);
             toast.error(error.response?.data);
         }
     };
@@ -39,6 +62,9 @@ const dashboard = () => {
                             handleSubmit={handleSubmit}
                             content={content}
                             setContent={setContent}
+                            handleImage={handleImage}
+                            uploading={uploading}
+                            image={image}
                         />
                     </div>
                     <div className="col-md-4">Sidebr</div>
