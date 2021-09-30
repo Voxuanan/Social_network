@@ -6,7 +6,7 @@ const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 import { CameraOutlined, LoadingOutlined } from "@ant-design/icons";
 import "react-quill/dist/quill.snow.css";
 
-const CreatePostForm = ({ content, setContent, handleSubmit, handleImage, image, uploading }) => {
+const PostForm = ({ content, setContent, handleSubmit, handleImage, image, uploading }) => {
     return (
         <div className="card">
             <div className="card-body pb-3">
@@ -48,4 +48,4 @@ const CreatePostForm = ({ content, setContent, handleSubmit, handleImage, image,
     );
 };
 
-export default CreatePostForm;
+export default PostForm;

@@ -50,3 +50,28 @@ export const postsByUser = async (req, res) => {
         res.status(400).send("Error, please try again");
     }
 };
+
+export const userPost = async (req, res) => {
+    try {
+        const post = await Post.findById(req.params._id).populate("postedBy", "_id name image");
+        // console.log(JSON.stringify(post, null, 2));
+        // console.log(req.user);
+        res.json(post);
+    } catch (error) {
+        console.log("USER POST ERROR =>", error);
+        res.status(400).send("Error, please try again");
+    }
+};
+
+export const updatePost = async (req, res) => {
+    console.log("UPDATE POST", req.body);
+    try {
+        const post = await Post.findByIdAndUpdate(req.params._id, req.body, {
+            new: true,
+        });
+        return res.json(post);
+    } catch (error) {
+        console.log("UPDATE POST ERROR =>", error);
+        res.status(400).send("Error, please try again");
+    }
+};

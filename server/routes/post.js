@@ -1,9 +1,15 @@
 const express = require("express");
-const { createPost, uploadImage, postsByUser } = require("../controllers/post");
+const {
+    createPost,
+    uploadImage,
+    postsByUser,
+    userPost,
+    updatePost,
+} = require("../controllers/post");
 const formidableMiddleware = require("express-formidable");
 
 //middlewares
-const { requireSignIn } = require("../middlewares/index");
+const { requireSignIn, canEditDeletePost } = require("../middlewares/index");
 
 const router = express.Router();
 
@@ -15,5 +21,7 @@ router.post(
     uploadImage
 );
 router.get("/user-posts", requireSignIn, postsByUser);
+router.get("/user-post/:_id", requireSignIn, userPost);
+router.put("/update-post/:_id", requireSignIn, canEditDeletePost, updatePost);
 
 module.exports = router;

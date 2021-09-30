@@ -1,30 +1,35 @@
-import { useContext, useState, useEffect } from "react";
-import { UserContext } from "../../context/index";
-import UserRoute from "../../components/routes/UserRoute";
-import PostForm from "../../components/forms/PostForm";
 import { useRouter } from "next/router";
+import { UserContext } from "../../../context/index";
+import { useEffect, useState, useContext } from "react";
 import axios from "axios";
+import PostForm from "../../../components/forms/PostForm";
+import UserRoute from "../../../components/routes/UserRoute";
+import PostList from "../../../components/cards/PostList";
+
 import { toast } from "react-toastify";
-import PostList from "../../components/cards/PostList";
 
-const dashboard = () => {
+const EditPost = () => {
     const [state, setState] = useContext(UserContext);
-
+    const [post, setPost] = useState({});
     const [content, setContent] = useState("");
     const [image, setImage] = useState({});
     const [uploading, setUploading] = useState(false);
 
-    const [posts, setPosts] = useState([]);
     const router = useRouter();
-    useEffect(() => {
-        if (state && state.token) fetchUserPosts();
-    }, [state && state.token]);
+    // console.log("router =>",router);
+    const _id = router.query._id;
 
-    const fetchUserPosts = async (req, res) => {
+    useEffect(() => {
+        if (_id) fetchPost();
+    }, [_id]);
+
+    const fetchPost = async () => {
         try {
-            const { data } = await axios.get("/user-posts");
-            setPosts(data);
-            // console.log("POST BY USER =>", data);
+            const { data } = await axios.get(`/user-post/${_id}`);
+            // console.log(data);
+            setContent(data.content);
+            setImage(data.image);
+            setPost(data);
         } catch (error) {
             toast.error(error.response?.data);
         }
@@ -33,12 +38,9 @@ const dashboard = () => {
     const postSubmit = async (e) => {
         e.preventDefault();
         try {
-            const { data } = await axios.post("/create-post", { content, image });
-            // console.log("CREATE POST RESPONSE =>", data);
-            fetchUserPosts();
-            setImage({});
-            setContent("");
-            toast.success("Post successfully");
+            const { data } = await axios.put(`/update-post/${_id}`, { content, image });
+            toast.success("update post successfully");
+            router.push("/user/dashboard");
         } catch (error) {
             toast.error(error.response?.data);
         }
@@ -64,7 +66,21 @@ const dashboard = () => {
         }
     };
 
-    return (
+    return state && state.user && post && post.postedBy && state.user._id != post.postedBy._id ? (
+        <div className="container-fluid">
+            <div className="row py-5 bg-default-image text-light">
+                <div className="col text-center">
+                    <h1>Newsfeed</h1>
+                </div>
+            </div>
+
+            <div className="row py-3">
+                <div className="col-md-8 offset-md-2">
+                    <PostList posts={[post]} />
+                </div>
+            </div>
+        </div>
+    ) : (
         <UserRoute>
             <div className="container-fluid">
                 <div className="row py-5 bg-default-image text-light">
@@ -74,7 +90,7 @@ const dashboard = () => {
                 </div>
 
                 <div className="row py-3">
-                    <div className="col-md-8">
+                    <div className="col-md-8 offset-md-2">
                         <PostForm
                             handleSubmit={postSubmit}
                             content={content}
@@ -83,17 +99,11 @@ const dashboard = () => {
                             uploading={uploading}
                             image={image}
                         />
-
-                        <PostList posts={posts} />
                     </div>
-
-                    {/* <pre>{JSON.stringify(posts, null, 4)}</pre> */}
-
-                    <div className="col-md-4">Sidebr</div>
                 </div>
             </div>
         </UserRoute>
     );
 };
 
-export default dashboard;
+export default EditPost;
