@@ -25,7 +25,7 @@ export const uploadImage = async (req, res) => {
     // console.log("UPLOAD IMAGE =>", req.files);
     try {
         const result = await cloudinary.uploader.upload(req.files.image.path);
-        console.log("UPLOAD IMAGE RESULT =>", result);
+        // console.log("UPLOAD IMAGE RESULT =>", result);
         res.json({
             url: result.secure_url,
             public_id: result.public_id,
@@ -64,14 +64,33 @@ export const userPost = async (req, res) => {
 };
 
 export const updatePost = async (req, res) => {
-    console.log("UPDATE POST", req.body);
+    // console.log("UPDATE POST", req.body);
     try {
-        const post = await Post.findByIdAndUpdate(req.params._id, req.body, {
+        let post = await Post.findById(req.params._id);
+        if (post.image && post.image.public_id) {
+            const image = await cloudinary.uploader.destroy(post.image.public_id);
+        }
+        post = await Post.findByIdAndUpdate(req.params._id, req.body, {
             new: true,
         });
         return res.json(post);
     } catch (error) {
         console.log("UPDATE POST ERROR =>", error);
+        res.status(400).send("Error, please try again");
+    }
+};
+
+export const deletePost = async (req, res) => {
+    try {
+        const post = await Post.findByIdAndRemove(req.params._id);
+        // remove imagfe
+        if (post.image && post.image.public_id) {
+            const image = await cloudinary.uploader.destroy(post.image.public_id);
+        }
+        console.log("ok");
+        return res.json({ ok: true });
+    } catch (error) {
+        console.log("DELETE POST ERROR =>", error);
         res.status(400).send("Error, please try again");
     }
 };

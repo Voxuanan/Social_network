@@ -9,7 +9,7 @@ export const requireSignIn = expressJwt({
 export const canEditDeletePost = async (req, res, next) => {
     try {
         const post = await Post.findById(req.params._id);
-        console.log(post.postedBy._id);
+        // console.log(post.postedBy._id);
         if (post.postedBy._id == req.user._id) {
             next();
         } else return res.status(400).send("Unauthorized");

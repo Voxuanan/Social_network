@@ -33,10 +33,10 @@ const PostForm = ({ content, setContent, handleSubmit, handleImage, image, uploa
                 </button>
 
                 <label>
-                    {image && image.url ? (
-                        <Avatar src={image.url} size={30} className="mt-1" />
-                    ) : uploading ? (
+                    {uploading ? (
                         <LoadingOutlined className="mt-2" />
+                    ) : image && image.url ? (
+                        <Avatar src={image.url} size={30} className="mt-1" />
                     ) : (
                         <CameraOutlined className="mt-2" />
                     )}
