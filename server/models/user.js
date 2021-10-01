@@ -8,6 +8,11 @@ const userSchema = new Schema(
             trim: true,
             required: true,
         },
+        username: {
+            type: String,
+            unique: true,
+            required: true,
+        },
         email: {
             type: String,
             trim: true,
@@ -24,7 +29,7 @@ const userSchema = new Schema(
             type: String,
             required: true,
         },
-        about: {},
+        about: { type: String },
         photo: String,
         following: [{ type: Schema.ObjectId, ref: "User" }],
         followers: [{ type: Schema.ObjectId, ref: "User" }],

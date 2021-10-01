@@ -1,6 +1,7 @@
 const User = require("../models/user");
 const { hashPassword, comparePassword } = require("../helper/auth");
 const jwt = require("jsonwebtoken");
+import { nanoid } from "nanoid";
 
 export const register = async (req, res) => {
     // console.log("REGISTER ENDPOINT => ", req.body);
@@ -17,7 +18,13 @@ export const register = async (req, res) => {
         // hash password
         const hashedPassword = await hashPassword(password);
 
-        const user = new User({ name, email, password: hashedPassword, secret });
+        const user = new User({
+            name,
+            email,
+            password: hashedPassword,
+            secret,
+            username: nanoid(7),
+        });
         // Save user
         await user.save();
         // console.log("REGISTER USER => ", user);
@@ -42,6 +49,7 @@ export const login = async (req, res) => {
         const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
         user.password = undefined;
         user.secret = undefined;
+        console.log(user);
         res.json({ token, user });
     } catch (error) {
         // console.log("LOGIN FALLED => ", error);
@@ -78,6 +86,44 @@ export const forgotPassword = async (req, res) => {
         });
     } catch (error) {
         // console.log("FORGOT PASSWORD FALLED => ", error);
+        res.status(400).send("Error, please try again");
+    }
+};
+
+export const profileUpdate = async (req, res) => {
+    // console.log("PROFILE UPDATE => ", req.body);
+    try {
+        const data = {};
+        if (req.body.username) {
+            data.username = req.body.username;
+        }
+        if (req.body.about) {
+            data.about = req.body.about;
+        }
+        if (req.body.name) {
+            data.name = req.body.name;
+        }
+        if (req.body.email) {
+            data.email = req.body.email;
+        }
+        if (req.body.password) {
+            if (req.body.password.length < 6) {
+                return res.status(400).send("New password is required and at least 6 characters");
+            } else data.password = await hashPassword(req.body.password);
+        }
+        if (req.body.secret) {
+            data.secret = req.body.secret;
+        }
+
+        let user = await User.findByIdAndUpdate(req.user._id, data, { new: true });
+        // console.log("UPDATED USER => ", user);
+        user.password = undefined;
+        user.secret = undefined;
+        res.json(user);
+    } catch (error) {
+        if (error.code == 11000) {
+            return res.status(400).send("Duplicate username");
+        }
         res.status(400).send("Error, please try again");
     }
 };

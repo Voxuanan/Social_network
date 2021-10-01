@@ -11,10 +11,29 @@ const AuthForm = ({
     secret,
     setSecret,
     loading,
+    username,
+    setUsername,
+    about,
+    setAbout,
     page,
 }) => {
     return (
         <form onSubmit={handleSubmit}>
+            {page === "profile/update" && (
+                <div className="form-group p-2">
+                    <small>
+                        <label className="text-muted">Username</label>
+                    </small>
+                    <input
+                        onChange={(e) => setUsername(e.target.value)}
+                        value={username}
+                        type="text"
+                        className="form-control"
+                        placeholder="Enter Username"
+                    />
+                </div>
+            )}
+
             {page !== "login" && (
                 <div className="form-group p-2">
                     <small>
@@ -38,6 +57,7 @@ const AuthForm = ({
                     onChange={(e) => setEmail(e.target.value)}
                     value={email}
                     type="email"
+                    disabled={page === "profile/update"}
                     className="form-control"
                     placeholder="Enter Email"
                 />
@@ -58,37 +78,62 @@ const AuthForm = ({
 
             {page !== "login" && (
                 <>
-                    <div className="form-group p-2">
-                        <small>
-                            <label className="text-muted">Pick a question</label>
-                        </small>
-                        <select className="form-select">
-                            <option>What is your favorite color?</option>
-                            <option>What is your best friend's name?</option>
-                            <option>What city you were born?</option>
-                        </select>
+                    <div
+                        className="form-group m-2"
+                        style={{
+                            borderRadius: ".25rem",
+                            border: "1px solid #ced4da",
+                        }}
+                    >
+                        <div className="form-group p-2">
+                            <small>
+                                <label className="text-muted">Pick a question</label>
+                            </small>
+                            <select className="form-select">
+                                <option>What is your favorite color?</option>
+                                <option>What is your best friend's name?</option>
+                                <option>What city you were born?</option>
+                            </select>
 
-                        <small className="form-text text-muted">
-                            You can use this to reset your password if forgotten
-                        </small>
-                    </div>
+                            <small className="form-text text-muted">
+                                You can use this to reset your password if forgotten
+                            </small>
+                        </div>
 
-                    <div className="form-group p-2">
-                        <input
-                            onChange={(e) => setSecret(e.target.value)}
-                            value={secret}
-                            type="text"
-                            className="form-control"
-                            placeholder="Write your answer here"
-                        />
+                        <div className="form-group p-2">
+                            <input
+                                onChange={(e) => setSecret(e.target.value)}
+                                value={secret}
+                                type="text"
+                                className="form-control"
+                                placeholder="Write your answer here"
+                            />
+                        </div>
                     </div>
                 </>
+            )}
+
+            {page === "profile/update" && (
+                <div className="form-group p-2">
+                    <small>
+                        <label className="text-muted">About</label>
+                    </small>
+                    <input
+                        onChange={(e) => setAbout(e.target.value)}
+                        value={about}
+                        type="text"
+                        className="form-control"
+                        placeholder="Enter About"
+                    />
+                </div>
             )}
 
             <div className="form-group p-2">
                 <button
                     disabled={
-                        page === "login"
+                        page === "profile/update"
+                            ? loading
+                            : page === "login"
                             ? !email || !password
                             : !name || !email || !secret || !password
                     }
