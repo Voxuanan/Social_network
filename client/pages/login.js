@@ -31,14 +31,14 @@ const Login = () => {
             setEmail("");
             setPassword("");
             setLoading(false);
-            router.push("/");
+            router.push("/user/dashboard");
         } catch (error) {
             setLoading(false);
             toast.error(error.response?.data);
         }
     };
 
-    if (state && state.token) router.push("/");
+    if (state && state.token) router.push("/user/dashboard");
     return (
         <div className="container-fluid">
             <div className="row py-5 bg-default-image text-light">

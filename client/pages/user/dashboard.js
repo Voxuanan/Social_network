@@ -6,6 +6,7 @@ import { useRouter } from "next/router";
 import axios from "axios";
 import { toast } from "react-toastify";
 import PostList from "../../components/cards/PostList";
+import People from "../../components/cards/People";
 
 const dashboard = () => {
     const [state, setState] = useContext(UserContext);
@@ -13,11 +14,15 @@ const dashboard = () => {
     const [content, setContent] = useState("");
     const [image, setImage] = useState({});
     const [uploading, setUploading] = useState(false);
+    const [people, setPeople] = useState([]);
 
     const [posts, setPosts] = useState([]);
     const router = useRouter();
     useEffect(() => {
-        if (state && state.token) fetchUserPosts();
+        if (state && state.token) {
+            fetchUserPosts();
+            findPeople();
+        }
     }, [state && state.token]);
 
     const fetchUserPosts = async (req, res) => {
@@ -25,6 +30,15 @@ const dashboard = () => {
             const { data } = await axios.get("/user-posts");
             setPosts(data);
             // console.log("POST BY USER =>", data);
+        } catch (error) {
+            toast.error(error.response?.data);
+        }
+    };
+
+    const findPeople = async (req, res) => {
+        try {
+            const { data } = await axios.get("/find-people");
+            setPeople(data);
         } catch (error) {
             toast.error(error.response?.data);
         }
@@ -86,7 +100,7 @@ const dashboard = () => {
                 </div>
 
                 <div className="row py-3">
-                    <div className="col-md-8">
+                    <div className="col-md-8 px-4">
                         <PostForm
                             handleSubmit={postSubmit}
                             content={content}
@@ -101,7 +115,9 @@ const dashboard = () => {
 
                     {/* <pre>{JSON.stringify(posts, null, 4)}</pre> */}
 
-                    <div className="col-md-4">Sidebr</div>
+                    <div className="col-md-4">
+                        <People people={people} />
+                    </div>
                 </div>
             </div>
         </UserRoute>

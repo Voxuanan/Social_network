@@ -20,7 +20,7 @@ const Nav = () => {
     return (
         <nav className="nav  d-flex justify-content-end" style={{ backgroundColor: "#0d6efd" }}>
             <Link href="/">
-                <a className={`nav-link text-light logo ${current === "/" && "active"}`}>Home</a>
+                <a className={`nav-link text-light ${current === "/" && "active"}`}>Home</a>
             </Link>
 
             {state === null ? (

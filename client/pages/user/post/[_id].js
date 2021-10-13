@@ -39,7 +39,7 @@ const EditPost = () => {
         e.preventDefault();
         try {
             const { data } = await axios.put(`/update-post/${_id}`, { content, image });
-            toast.success("update post successfully");
+            toast.success("Update post successfully");
             router.push("/user/dashboard");
         } catch (error) {
             toast.error(error.response?.data);

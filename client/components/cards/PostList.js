@@ -10,7 +10,7 @@ import {
     DeleteOutlined,
 } from "@ant-design/icons";
 import { UserContext } from "../../context";
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import { useRouter } from "next/router";
 
 const PostList = ({ posts, handleDelete }) => {
@@ -23,7 +23,9 @@ const PostList = ({ posts, handleDelete }) => {
                 <div key={post._id} className="card my-4">
                     <div className="card-header d-flex justify-content-between">
                         <div>
-                            <Avatar size={40}>{post.postedBy.name[0]}</Avatar>{" "}
+                            <Avatar size={40} src={post.postedBy?.image?.url}>
+                                {post.postedBy.name[0]}
+                            </Avatar>{" "}
                             <span className="pt-2 mx-2">{post.postedBy.name}</span>{" "}
                             <span className="pt-2 ">{moment(post.createdAt).fromNow()}</span>
                         </div>

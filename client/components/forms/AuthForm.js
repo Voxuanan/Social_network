@@ -15,6 +15,7 @@ const AuthForm = ({
     setUsername,
     about,
     setAbout,
+    uploading,
     page,
 }) => {
     return (
@@ -132,7 +133,7 @@ const AuthForm = ({
                 <button
                     disabled={
                         page === "profile/update"
-                            ? loading
+                            ? loading || uploading
                             : page === "login"
                             ? !email || !password
                             : !name || !email || !secret || !password

@@ -114,6 +114,9 @@ export const profileUpdate = async (req, res) => {
         if (req.body.secret) {
             data.secret = req.body.secret;
         }
+        if (req.body.image) {
+            data.image = req.body.image;
+        }
 
         let user = await User.findByIdAndUpdate(req.user._id, data, { new: true });
         // console.log("UPDATED USER => ", user);
@@ -124,6 +127,18 @@ export const profileUpdate = async (req, res) => {
         if (error.code == 11000) {
             return res.status(400).send("Duplicate username");
         }
+        res.status(400).send("Error, please try again");
+    }
+};
+
+export const findPeople = async (req, res) => {
+    try {
+        const user = await User.findById(req.user._id);
+        let following = user.following;
+        following.push(user._id);
+        const people = await User.find({ _id: { $nin: following } }).limit(10);
+        res.json(people);
+    } catch (error) {
         res.status(400).send("Error, please try again");
     }
 };
