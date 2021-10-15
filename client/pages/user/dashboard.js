@@ -7,6 +7,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import PostList from "../../components/cards/PostList";
 import People from "../../components/cards/People";
+import Link from "next/link";
 
 const dashboard = () => {
     const [state, setState] = useContext(UserContext);
@@ -20,14 +21,14 @@ const dashboard = () => {
     const router = useRouter();
     useEffect(() => {
         if (state && state.token) {
-            fetchUserPosts();
+            newsFeed();
             findPeople();
         }
     }, [state && state.token]);
 
-    const fetchUserPosts = async (req, res) => {
+    const newsFeed = async (req, res) => {
         try {
-            const { data } = await axios.get("/user-posts");
+            const { data } = await axios.get("/news-feed");
             setPosts(data);
             // console.log("POST BY USER =>", data);
         } catch (error) {
@@ -49,7 +50,7 @@ const dashboard = () => {
         try {
             const { data } = await axios.post("/create-post", { content, image });
             // console.log("CREATE POST RESPONSE =>", data);
-            fetchUserPosts();
+            newsFeed();
             setImage({});
             setContent("");
             toast.success("Post successfully");
@@ -84,7 +85,23 @@ const dashboard = () => {
             if (!answer) return;
             const { data } = await axios.delete(`/delete-post/${post._id}`);
             toast.success("Post deleted");
-            fetchUserPosts();
+            newsFeed();
+        } catch (error) {
+            toast.error(error.response?.data);
+        }
+    };
+
+    const handleFollow = async (user) => {
+        try {
+            const { data } = await axios.put(`/user-follow`, { _id: user._id });
+            let auth = JSON.parse(localStorage.getItem("auth"));
+            auth.user = data;
+            localStorage.setItem("auth", JSON.stringify(auth));
+            setState({ ...state, user: data });
+            toast.success(`Following "${user.name}"`);
+            let filtered = people.filter((person) => person._id !== user._id);
+            setPeople(filtered);
+            newsFeed();
         } catch (error) {
             toast.error(error.response?.data);
         }
@@ -116,7 +133,13 @@ const dashboard = () => {
                     {/* <pre>{JSON.stringify(posts, null, 4)}</pre> */}
 
                     <div className="col-md-4">
-                        <People people={people} />
+                        {state && state.user && state.user.following && (
+                            <Link href={"/user/following"}>
+                                <a className="h6 pt-2">{state.user.following.length} following</a>
+                            </Link>
+                        )}
+                        <a className="h6 d-block pt-2">People you may know</a>
+                        <People people={people} handleFollow={handleFollow} />
                     </div>
                 </div>
             </div>

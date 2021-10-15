@@ -4,7 +4,6 @@ const jwt = require("jsonwebtoken");
 import { nanoid } from "nanoid";
 
 export const register = async (req, res) => {
-    // console.log("REGISTER ENDPOINT => ", req.body);
     try {
         const { name, email, password, secret } = req.body;
         // validation
@@ -27,18 +26,15 @@ export const register = async (req, res) => {
         });
         // Save user
         await user.save();
-        // console.log("REGISTER USER => ", user);
         return res.json({
             ok: true,
         });
     } catch (error) {
-        console.log("REGISTER FALLED => ", error);
         res.status(400).send("Error, please try again");
     }
 };
 
 export const login = async (req, res) => {
-    // console.log("LOGIN ENDPOINT => ", req.body);
     try {
         const { email, password } = req.body;
         const user = await User.findOne({ email });
@@ -49,29 +45,23 @@ export const login = async (req, res) => {
         const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
         user.password = undefined;
         user.secret = undefined;
-        console.log(user);
         res.json({ token, user });
     } catch (error) {
-        // console.log("LOGIN FALLED => ", error);
         res.status(400).send("Error, please try again");
     }
 };
 
 export const currentUser = async (req, res) => {
-    // console.log(req.headers);
-    // console.log(req.user);
     try {
         const { _id } = req.user;
         const user = await User.findById({ _id });
         res.json({ ok: true });
     } catch (error) {
-        // console.log("CURRENT USER FALLED => ", error);
         res.status(400).send("Error, please try again");
     }
 };
 
 export const forgotPassword = async (req, res) => {
-    // console.log(req.body);
     try {
         const { email, newPassword, secret } = req.body;
         if (!newPassword || newPassword.length < 6)
@@ -85,13 +75,11 @@ export const forgotPassword = async (req, res) => {
             ok: true,
         });
     } catch (error) {
-        // console.log("FORGOT PASSWORD FALLED => ", error);
         res.status(400).send("Error, please try again");
     }
 };
 
 export const profileUpdate = async (req, res) => {
-    // console.log("PROFILE UPDATE => ", req.body);
     try {
         const data = {};
         if (req.body.username) {
@@ -119,7 +107,6 @@ export const profileUpdate = async (req, res) => {
         }
 
         let user = await User.findByIdAndUpdate(req.user._id, data, { new: true });
-        // console.log("UPDATED USER => ", user);
         user.password = undefined;
         user.secret = undefined;
         res.json(user);
@@ -136,8 +123,74 @@ export const findPeople = async (req, res) => {
         const user = await User.findById(req.user._id);
         let following = user.following;
         following.push(user._id);
-        const people = await User.find({ _id: { $nin: following } }).limit(10);
+        const people = await User.find({ _id: { $nin: following } })
+            .select("-password -secret")
+            .limit(10);
         res.json(people);
+    } catch (error) {
+        res.status(400).send("Error, please try again");
+    }
+};
+
+export const addFollower = async (req, res, next) => {
+    try {
+        const user = await User.findByIdAndUpdate(req.body._id, {
+            $addToSet: { followers: req.user._id },
+        });
+
+        next();
+    } catch (error) {
+        res.status(400).send("Error, please try again");
+    }
+};
+
+export const userFollow = async (req, res) => {
+    try {
+        const user = await User.findByIdAndUpdate(
+            req.user._id,
+            {
+                $addToSet: { following: req.body._id },
+            },
+            { new: true }
+        ).select("-password -secret");
+        res.json(user);
+    } catch (error) {
+        res.status(400).send("Error, please try again");
+    }
+};
+
+export const removeFollower = async (req, res, next) => {
+    try {
+        const user = await User.findByIdAndUpdate(req.body._id, {
+            $pull: { followers: req.user._id },
+        });
+
+        next();
+    } catch (error) {
+        res.status(400).send("Error, please try again");
+    }
+};
+
+export const userUnfollow = async (req, res) => {
+    try {
+        const user = await User.findByIdAndUpdate(
+            req.user._id,
+            {
+                $pull: { following: req.body._id },
+            },
+            { new: true }
+        ).select("-password -secret");
+        res.json(user);
+    } catch (error) {
+        res.status(400).send("Error, please try again");
+    }
+};
+
+export const userFollowing = async (req, res) => {
+    try {
+        const user = await User.findById(req.user._id);
+        const following = await User.find({ _id: { $in: user.following } });
+        res.json(following);
     } catch (error) {
         res.status(400).send("Error, please try again");
     }

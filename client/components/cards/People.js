@@ -1,33 +1,37 @@
 import { Avatar, List } from "antd";
-import moment from "moment";
 import { useRouter } from "next/router";
-import { UserContext } from "../../context";
-import { useContext } from "react";
 
-const People = ({ people }) => {
-    const [state, setState] = useContext(UserContext);
+const People = ({ people, handleFollow }) => {
     const router = useRouter();
 
     return (
         <>
+            {/* <pre>{JSON.stringify(people, null, 4)}</pre> */}
             <List
                 itemLayout="horizontal"
                 dataSource={people}
-                renderItem={(person) => (
+                renderItem={(user) => (
                     <List.Item className="me-3">
                         <List.Item.Meta
                             avatar={
-                                <Avatar size={40} src={person?.image?.url}>
-                                    {person.name[0]}
+                                <Avatar size={40} src={user?.image?.url}>
+                                    {user.name[0]}
                                 </Avatar>
                             }
                             title={
                                 <div className="d-flex justify-content-between">
-                                    {person.name}
-                                    <span className="text-primary">Follow</span>
+                                    {user.name}
+                                    <span
+                                        className="text-primary pointer"
+                                        onClick={() => {
+                                            handleFollow(user);
+                                        }}
+                                    >
+                                        Follow
+                                    </span>
                                 </div>
                             }
-                            description={person?.about}
+                            description={user?.about}
                         />
                     </List.Item>
                 )}
