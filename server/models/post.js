@@ -15,7 +15,7 @@ const postSchema = new Schema(
             url: String,
             public_id: String,
         },
-        like: [{ type: ObjectId, ref: "User" }],
+        likes: [{ type: ObjectId, ref: "User" }],
         comments: [
             {
                 text: String,

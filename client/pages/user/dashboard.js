@@ -107,6 +107,24 @@ const dashboard = () => {
         }
     };
 
+    const handleLike = async (post) => {
+        try {
+            const { data } = await axios.put(`/like-post`, { _id: post._id });
+            newsFeed();
+        } catch (error) {
+            toast.error(error.response?.data);
+        }
+    };
+
+    const handleUnlike = async (post) => {
+        try {
+            const { data } = await axios.put(`/unlike-post`, { _id: post._id });
+            newsFeed();
+        } catch (error) {
+            toast.error(error.response?.data);
+        }
+    };
+
     return (
         <UserRoute>
             <div className="container-fluid">
@@ -127,10 +145,13 @@ const dashboard = () => {
                             image={image}
                         />
 
-                        <PostList posts={posts} handleDelete={handleDelete} />
+                        <PostList
+                            posts={posts}
+                            handleDelete={handleDelete}
+                            handleLike={handleLike}
+                            handleUnlike={handleUnlike}
+                        />
                     </div>
-
-                    {/* <pre>{JSON.stringify(posts, null, 4)}</pre> */}
 
                     <div className="col-md-4">
                         {state && state.user && state.user.following && (

@@ -90,7 +90,38 @@ export const newsFeed = async (req, res) => {
             .populate("postedBy", "_id name image")
             .sort({ createdAt: -1 })
             .limit(10);
-        res.json(posts);
+        return res.json(posts);
+    } catch (error) {
+        res.status(400).send("Error, please try again");
+    }
+};
+
+export const likePost = async (req, res) => {
+    try {
+        const post = await Post.findByIdAndUpdate(
+            req.body._id,
+            {
+                $addToSet: { likes: req.user._id },
+            },
+            { new: true }
+        );
+        return res.json(post);
+    } catch (error) {
+        console.log(error);
+        // res.status(400).send("Error, please try again");
+    }
+};
+
+export const unlikePost = async (req, res) => {
+    try {
+        const post = await Post.findByIdAndUpdate(
+            req.body._id,
+            {
+                $pull: { likes: req.user._id },
+            },
+            { new: true }
+        );
+        return res.json(post);
     } catch (error) {
         res.status(400).send("Error, please try again");
     }
