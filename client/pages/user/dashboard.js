@@ -4,10 +4,12 @@ import UserRoute from "../../components/routes/UserRoute";
 import PostForm from "../../components/forms/PostForm";
 import { useRouter } from "next/router";
 import axios from "axios";
+import { Modal } from "antd";
 import { toast } from "react-toastify";
 import PostList from "../../components/cards/PostList";
 import People from "../../components/cards/People";
 import Link from "next/link";
+import CommentForm from "../../components/forms/CommentForm";
 
 const dashboard = () => {
     const [state, setState] = useContext(UserContext);
@@ -18,6 +20,10 @@ const dashboard = () => {
     const [people, setPeople] = useState([]);
 
     const [posts, setPosts] = useState([]);
+    const [comment, setComment] = useState("");
+    const [visible, setVisible] = useState(false);
+    const [currentPost, setCurrentPost] = useState("");
+
     const router = useRouter();
     useEffect(() => {
         if (state && state.token) {
@@ -125,6 +131,40 @@ const dashboard = () => {
         }
     };
 
+    const handleComment = async (post) => {
+        setCurrentPost(post);
+        setVisible(true);
+    };
+
+    const addComment = async (e) => {
+        e.preventDefault();
+        try {
+            const { data } = await axios.put("/add-comment", {
+                postId: currentPost._id,
+                comment,
+            });
+            setComment("");
+            setVisible(false);
+            newsFeed();
+        } catch (error) {
+            toast.error(error.response?.data);
+        }
+    };
+
+    const removeComment = async (postId, comment) => {
+        let answer = window.confirm("Are you sure you want to remove this comment?");
+        if (!answer) return;
+        try {
+            const { data } = await axios.put("/remove-comment", {
+                postId,
+                comment,
+            });
+            newsFeed();
+        } catch (error) {
+            toast.error(error.response?.data);
+        }
+    };
+
     return (
         <UserRoute>
             <div className="container-fluid">
@@ -150,6 +190,8 @@ const dashboard = () => {
                             handleDelete={handleDelete}
                             handleLike={handleLike}
                             handleUnlike={handleUnlike}
+                            handleComment={handleComment}
+                            removeComment={removeComment}
                         />
                     </div>
 
@@ -163,6 +205,19 @@ const dashboard = () => {
                         <People people={people} handleFollow={handleFollow} />
                     </div>
                 </div>
+
+                <Modal
+                    title="Comment"
+                    visible={visible}
+                    onCancel={() => setVisible(false)}
+                    footer={null}
+                >
+                    <CommentForm
+                        comment={comment}
+                        addComment={addComment}
+                        setComment={setComment}
+                    />
+                </Modal>
             </div>
         </UserRoute>
     );

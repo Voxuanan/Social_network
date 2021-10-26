@@ -25,7 +25,7 @@ const PostForm = ({ content, setContent, handleSubmit, handleImage, image, uploa
 
             <div className="card-footer d-flex justify-content-between text-muted">
                 <button
-                    disabled={!content}
+                    disabled={!content || uploading}
                     className="btn btn-primary btn-sm mt-1"
                     onClick={handleSubmit}
                 >
