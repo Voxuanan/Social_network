@@ -82,9 +82,9 @@ const Post = ({
                                 className="pt-3 h5 text-secondary px-2 pointer"
                                 onClick={() => handleComment(post)}
                             />
-                            <div className="pt-3">
+                            <div className="pt-3 ">
                                 <Link href={`/post/${post._id}`}>
-                                    <a>{post.comments.length} comments</a>
+                                    <a className="text-dark">{post.comments.length} comments</a>
                                 </Link>
                             </div>
                         </div>
@@ -115,19 +115,30 @@ const Post = ({
                                     </div>
                                     <span className="badge rouded-pill text-muted">
                                         {moment(c.created).fromNow()}
-                                        {state && state.user && state.user._id == c.postedBy._id && (
-                                            <div className="ml-auto mt-1">
-                                                <DeleteOutlined
-                                                    className="pl-2 text-danger"
-                                                    onClick={() => {
-                                                        removeComment(post._id, c);
-                                                    }}
-                                                />
-                                            </div>
-                                        )}
+                                        {state &&
+                                            state.user &&
+                                            (state.user._id == c.postedBy._id ||
+                                                state.user._id == post.postedBy._id) && (
+                                                <div className="ml-auto mt-1">
+                                                    <DeleteOutlined
+                                                        className="pl-2 text-danger"
+                                                        onClick={() => {
+                                                            removeComment(post._id, c);
+                                                        }}
+                                                    />
+                                                </div>
+                                            )}
                                     </span>
                                 </li>
                             ))}
+
+                            {post.comments.length > 0 && commentCount == 2 && (
+                                <div className="d-flex justify-content-center py-2 align-items-center">
+                                    <Link href={`/post/${post._id}`}>
+                                        <a className="text-secondary">See more</a>
+                                    </Link>
+                                </div>
+                            )}
                         </ol>
                     )}
                 </div>

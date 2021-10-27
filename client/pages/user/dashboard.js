@@ -4,12 +4,13 @@ import UserRoute from "../../components/routes/UserRoute";
 import PostForm from "../../components/forms/PostForm";
 import { useRouter } from "next/router";
 import axios from "axios";
-import { Modal } from "antd";
+import { Modal, Pagination } from "antd";
 import { toast } from "react-toastify";
 import PostList from "../../components/cards/PostList";
 import People from "../../components/cards/People";
 import Link from "next/link";
 import CommentForm from "../../components/forms/CommentForm";
+import { route } from "next/dist/server/router";
 
 const dashboard = () => {
     const [state, setState] = useContext(UserContext);
@@ -18,23 +19,35 @@ const dashboard = () => {
     const [image, setImage] = useState({});
     const [uploading, setUploading] = useState(false);
     const [people, setPeople] = useState([]);
+    const [total, setTotal] = useState(0);
 
     const [posts, setPosts] = useState([]);
     const [comment, setComment] = useState("");
     const [visible, setVisible] = useState(false);
     const [currentPost, setCurrentPost] = useState("");
+    const [page, setPage] = useState(1);
 
     const router = useRouter();
     useEffect(() => {
         if (state && state.token) {
-            newsFeed();
             findPeople();
+            totalPosts();
+            newsFeed();
         }
-    }, [state && state.token]);
+    }, [state && state.token, page]);
+
+    const totalPosts = async (req, res) => {
+        try {
+            const { data } = await axios.get("/total-posts");
+            setTotal(data);
+        } catch (error) {
+            toast.error(error.response?.data);
+        }
+    };
 
     const newsFeed = async (req, res) => {
         try {
-            const { data } = await axios.get("/news-feed");
+            const { data } = await axios.get(`/news-feed/${page}`);
             setPosts(data);
             // console.log("POST BY USER =>", data);
         } catch (error) {
@@ -193,6 +206,14 @@ const dashboard = () => {
                             handleComment={handleComment}
                             removeComment={removeComment}
                         />
+
+                        <div className="d-flex justify-content-center  ">
+                            <Pagination
+                                current={page}
+                                total={total}
+                                onChange={(value) => setPage(value)}
+                            />
+                        </div>
                     </div>
 
                     <div className="col-md-4">
