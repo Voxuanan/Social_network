@@ -137,7 +137,6 @@ export const addFollower = async (req, res, next) => {
         const user = await User.findByIdAndUpdate(req.body._id, {
             $addToSet: { followers: req.user._id },
         });
-
         next();
     } catch (error) {
         res.status(400).send("Error, please try again");
@@ -192,6 +191,24 @@ export const userFollowing = async (req, res) => {
         const following = await User.find({ _id: { $in: user.following } });
         res.json(following);
     } catch (error) {
+        res.status(400).send("Error, please try again");
+    }
+};
+
+export const searchUser = async (req, res) => {
+    const { query } = req.params;
+    if (!query) return;
+    try {
+        // $regex is a special method from mongodb and the i modifier i used to pefrom case-insensitive matching
+        const user = await User.find({
+            $or: [
+                { name: { $regex: query, $options: "i" } },
+                { username: { $regex: query, $options: "i" } },
+            ],
+        }).select("-password -secret");
+        res.json(user);
+    } catch (error) {
+        console.log(error);
         res.status(400).send("Error, please try again");
     }
 };

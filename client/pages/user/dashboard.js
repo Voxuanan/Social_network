@@ -11,6 +11,7 @@ import People from "../../components/cards/People";
 import Link from "next/link";
 import CommentForm from "../../components/forms/CommentForm";
 import { route } from "next/dist/server/router";
+import Search from "../../components/Search";
 
 const dashboard = () => {
     const [state, setState] = useContext(UserContext);
@@ -212,11 +213,14 @@ const dashboard = () => {
                                 current={page}
                                 total={total}
                                 onChange={(value) => setPage(value)}
+                                className="pb-5"
                             />
                         </div>
                     </div>
 
                     <div className="col-md-4">
+                        <Search></Search>
+                        <br />
                         {state && state.user && state.user.following && (
                             <Link href={"/user/following"}>
                                 <a className="h6 pt-2">{state.user.following.length} following</a>

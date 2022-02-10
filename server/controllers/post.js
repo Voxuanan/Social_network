@@ -156,6 +156,7 @@ export const addComment = async (req, res) => {
 
 export const removeComment = async (req, res) => {
     try {
+        A;
         const { postId, comment } = req.body;
         const post = await Post.findByIdAndUpdate(
             postId,
