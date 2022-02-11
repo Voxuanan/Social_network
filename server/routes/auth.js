@@ -12,6 +12,7 @@ const {
     removeFollower,
     userUnfollow,
     searchUser,
+    getUser,
 } = require("../controllers/auth");
 //middlewares
 const { requireSignIn } = require("../middlewares/index");
@@ -28,4 +29,5 @@ router.put("/user-follow", requireSignIn, addFollower, userFollow);
 router.put("/user-unfollow", requireSignIn, removeFollower, userUnfollow);
 router.get("/user-following", requireSignIn, userFollowing);
 router.get("/search-user/:query", searchUser);
+router.get("/user/:username", getUser);
 module.exports = router;

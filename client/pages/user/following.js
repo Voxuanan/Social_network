@@ -55,7 +55,9 @@ const following = () => {
                                 }
                                 title={
                                     <div className="d-flex justify-content-between">
-                                        {user.name}
+                                        <Link href={`/user/${user.username}`}>
+                                            <a>{user.name}</a>
+                                        </Link>
                                         <span
                                             className="text-primary pointer"
                                             onClick={() => {

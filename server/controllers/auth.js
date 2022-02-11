@@ -212,3 +212,16 @@ export const searchUser = async (req, res) => {
         res.status(400).send("Error, please try again");
     }
 };
+
+export const getUser = async (req, res) => {
+    const { username } = req.params;
+    if (!username) return;
+    try {
+        // $regex is a special method from mongodb and the i modifier i used to pefrom case-insensitive matching
+        const user = await User.findOne({ username: username }).select("-password -secret");
+        res.json(user);
+    } catch (error) {
+        console.log(error);
+        res.status(400).send("Error, please try again");
+    }
+};

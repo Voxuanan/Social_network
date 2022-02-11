@@ -2,6 +2,7 @@ import { Avatar, List } from "antd";
 import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../../context/index";
 import { useRouter } from "next/router";
+import Link from "next/link";
 
 const People = ({ people, handleFollow, handleUnfollow }) => {
     const router = useRouter();
@@ -23,7 +24,9 @@ const People = ({ people, handleFollow, handleUnfollow }) => {
                             }
                             title={
                                 <div className="d-flex justify-content-between">
-                                    {user.name}
+                                    <Link href={`/user/${user.username}`}>
+                                        <a>{user.name}</a>
+                                    </Link>
                                     {state &&
                                     state.user &&
                                     user.followers &&
