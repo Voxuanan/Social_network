@@ -5,24 +5,21 @@ import axios from "axios";
 import PostPublic from "../components/cards/PostPublic";
 import Head from "next/head";
 import Link from "next/link";
-import { post } from "../../server/routes/post";
 
 const Home = ({ posts }) => {
     const [state, setState] = useContext(UserContext);
     const head = () => {
         return (
             <Head>
-                <meta name="description" content={post.content}></meta>
+                <meta name="description" content="Test social network"></meta>
                 <meta property="og:description" content="Test social network"></meta>
                 <meta property="og:type" content="Website"></meta>
                 <meta property="og:site_name" content="MERNCAMP"></meta>
-                <meta property="og:url" content={`http:/MERNCAMP.com/post/view/${post._id}`}></meta>
-                {post && post.image && (
-                    <meta
-                        property="og:image:secure_url"
-                        content={`http:/MERNCAMP.com/images/${post.image}`}
-                    ></meta>
-                )}
+                <meta property="og:url" content="http:/MERNCAMP.com"></meta>
+                <meta
+                    property="og:image:secure_url"
+                    content="http:/MERNCAMP.com/images/default.jpg"
+                ></meta>
             </Head>
         );
     };

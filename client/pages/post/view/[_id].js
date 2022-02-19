@@ -7,15 +7,17 @@ const SinglePost = ({ post }) => {
     const head = () => {
         return (
             <Head>
-                <meta name="description" content="Test social network"></meta>
+                <meta name="description" content={post.content}></meta>
                 <meta property="og:description" content="Test social network"></meta>
                 <meta property="og:type" content="Website"></meta>
                 <meta property="og:site_name" content="MERNCAMP"></meta>
-                <meta property="og:url" content="http:/MERNCAMP.com"></meta>
-                <meta
-                    property="og:image:secure_url"
-                    content="http:/MERNCAMP.com/images/default.jpg"
-                ></meta>
+                <meta property="og:url" content={`http:/MERNCAMP.com/post/view/${post._id}`}></meta>
+                {post && post.image && (
+                    <meta
+                        property="og:image:secure_url"
+                        content={`http:/MERNCAMP.com/images/${post.image}`}
+                    ></meta>
+                )}
             </Head>
         );
     };
