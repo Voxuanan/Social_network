@@ -1,19 +1,57 @@
-import { useState, useContext } from "react";
+import { useState, useContext, userEffects } from "react";
 import { UserContext } from "../context/index";
+import ParallaxBG from "../components/cards/ParallaxBG";
+import axios from "axios";
+import PostPublic from "../components/cards/PostPublic";
+import Head from "next/head";
+import Link from "next/link";
+import { post } from "../../server/routes/post";
 
-const Home = () => {
+const Home = ({ posts }) => {
     const [state, setState] = useContext(UserContext);
+    const head = () => {
+        return (
+            <Head>
+                <meta name="description" content={post.content}></meta>
+                <meta property="og:description" content="Test social network"></meta>
+                <meta property="og:type" content="Website"></meta>
+                <meta property="og:site_name" content="MERNCAMP"></meta>
+                <meta property="og:url" content={`http:/MERNCAMP.com/post/view/${post._id}`}></meta>
+                {post && post.image && (
+                    <meta
+                        property="og:image:secure_url"
+                        content={`http:/MERNCAMP.com/images/${post.image}`}
+                    ></meta>
+                )}
+            </Head>
+        );
+    };
     return (
-        <div className="container">
-            <div className="row">
-                <div className="col">
-                    <h1 className="display-1 text-center py-5">Home page</h1>
-                    {JSON.stringify(state, null, 2)}
-                    <img src="/images/default.jpg" alt="" />
+        <>
+            {head()}
+            <ParallaxBG url={"/images/default.jpg"}></ParallaxBG>
+            <div className="container">
+                <div className="row pt-5">
+                    {posts.map((post) => (
+                        <div className="col-md-4">
+                            <Link href={`post/view/${post._id}`}>
+                                <a>
+                                    <PostPublic key={post._id} post={post} />
+                                </a>
+                            </Link>
+                        </div>
+                    ))}
                 </div>
             </div>
-        </div>
+        </>
     );
 };
+
+export async function getServerSideProps(context) {
+    const { data } = await axios.get("/posts");
+    return {
+        props: { posts: data }, // will be passed to the page component as props
+    };
+}
 
 export default Home;

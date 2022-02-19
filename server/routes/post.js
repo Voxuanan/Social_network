@@ -12,6 +12,8 @@ const {
     addComment,
     removeComment,
     totalPosts,
+    posts,
+    getPosts,
 } = require("../controllers/post");
 const formidableMiddleware = require("express-formidable");
 
@@ -37,4 +39,6 @@ router.put("/unlike-post", requireSignIn, unlikePost);
 router.put("/add-comment", requireSignIn, addComment);
 router.put("/remove-comment", requireSignIn, removeComment);
 router.get("/total-posts", requireSignIn, totalPosts);
+router.get("/posts", posts);
+router.get("/post/:_id", getPosts);
 module.exports = router;

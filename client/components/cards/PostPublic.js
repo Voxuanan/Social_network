@@ -12,9 +12,8 @@ import {
 import { UserContext } from "../../context";
 import { useContext } from "react";
 import { useRouter } from "next/router";
-import Link from "next/link";
 
-const Post = ({
+const PostPublic = ({
     post,
     handleDelete,
     handleLike,
@@ -38,20 +37,6 @@ const Post = ({
                             <span className="pt-2 mx-2">{post.postedBy.name}</span>{" "}
                             <span className="pt-2 ">{moment(post.createdAt).fromNow()}</span>
                         </div>
-                        {state && state.user && state.user._id === post.postedBy._id && (
-                            <div>
-                                <EditOutlined
-                                    onClick={() => {
-                                        router.push(`/user/post/${post._id}`);
-                                    }}
-                                    className="pt-2 ml-3 h5 text-success px-3"
-                                />
-                                <DeleteOutlined
-                                    className="pt-2 ml-3 h5 text-danger px-3"
-                                    onClick={() => handleDelete(post)}
-                                />
-                            </div>
-                        )}
                     </div>
                     <div className="card-body">{renderHTML(post.content)}</div>
                     <div className="card-footer">
@@ -61,31 +46,16 @@ const Post = ({
                             state.user &&
                             post.likes &&
                             post.likes.includes(state.user._id) ? (
-                                <LikeFilled
-                                    className="pt-3 h5 text-primary px-2"
-                                    onClick={() => {
-                                        handleUnlike(post);
-                                    }}
-                                />
+                                <LikeFilled className="pt-3 h5 text-primary px-2" />
                             ) : (
-                                <LikeOutlined
-                                    className="pt-3 h5 text-secondary px-2"
-                                    onClick={() => {
-                                        handleLike(post);
-                                    }}
-                                />
+                                <LikeOutlined className="pt-3 h5 text-secondary px-2" />
                             )}
                             <div className="pt-3" style={{ marginRight: "1rem" }}>
                                 {post.likes.length} likes
                             </div>
-                            <CommentOutlined
-                                className="pt-3 h5 text-secondary px-2 pointer"
-                                onClick={() => handleComment(post)}
-                            />
+                            <CommentOutlined className="pt-3 h5 text-secondary px-2 pointer" />
                             <div className="pt-3 ">
-                                <Link href={`/post/${post._id}`}>
-                                    <a className="text-dark">{post.comments.length} comments</a>
-                                </Link>
+                                <p className="text-dark">{post.comments.length} comments</p>
                             </div>
                         </div>
                     </div>
@@ -115,30 +85,9 @@ const Post = ({
                                     </div>
                                     <span className="badge rouded-pill text-muted">
                                         {moment(c.created).fromNow()}
-                                        {state &&
-                                            state.user &&
-                                            (state.user._id == c.postedBy._id ||
-                                                state.user._id == post.postedBy._id) && (
-                                                <div className="ml-auto mt-1">
-                                                    <DeleteOutlined
-                                                        className="pl-2 text-danger"
-                                                        onClick={() => {
-                                                            removeComment(post._id, c);
-                                                        }}
-                                                    />
-                                                </div>
-                                            )}
                                     </span>
                                 </li>
                             ))}
-
-                            {post.comments.length > 0 && commentCount == 2 && (
-                                <div className="d-flex justify-content-center py-2 align-items-center">
-                                    <Link href={`/post/${post._id}`}>
-                                        <a className="text-secondary">See more</a>
-                                    </Link>
-                                </div>
-                            )}
                         </ol>
                     )}
                 </div>
@@ -147,4 +96,4 @@ const Post = ({
     );
 };
 
-export default Post;
+export default PostPublic;
