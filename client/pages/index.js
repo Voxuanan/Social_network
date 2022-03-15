@@ -1,4 +1,4 @@
-import { useState, useContext, userEffects } from "react";
+import { useState, useContext, useEffect } from "react";
 import { UserContext } from "../context/index";
 import ParallaxBG from "../components/cards/ParallaxBG";
 import axios from "axios";
@@ -30,7 +30,7 @@ const Home = ({ posts }) => {
             <div className="container">
                 <div className="row pt-5">
                     {posts.map((post) => (
-                        <div className="col-md-4">
+                        <div key={post._id} className="col-md-4">
                             <Link href={`post/view/${post._id}`}>
                                 <a>
                                     <PostPublic key={post._id} post={post} />
